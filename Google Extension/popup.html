@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Current Tab URL</title>
-  <style>
-    body {
-      width: 200px;
-      height: 50px;
-      padding: 10px;
-      font-size: 14px;
-      font-family: sans-serif;
-    }
-  </style>
-</head>
-<body>
-  <h1>Current Tab URL</h1>
-  <p id="url"></p>
-  <script src="popup.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <title>Phishing Detector</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        padding: 10px;
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      .result {
+        margin-top: 10px;
+      }
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Phishing Detector</h1>
+    <button id="checkPhishing">Check for Phishing</button>
+    <div id="result" class="result"></div>
+    <script src="popup.js"></script>
+  </body>
 </html>
