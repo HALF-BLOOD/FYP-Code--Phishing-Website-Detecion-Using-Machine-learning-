@@ -23,3 +23,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var checkPhishingButton = document.getElementById('checkPhishingButton');
+    var phishingStatus = document.getElementById('phishingStatus');
+  
+    checkPhishingButton.addEventListener('click', function() {
+      chrome.runtime.sendMessage({action: "getPhishingStatus"}, function(response) {
+        var isPhishing = response.isPhishing;
+        var message = response.message;
+        if (isPhishing) {
+          phishingStatus.style.color = "red";
+        } else {
+          phishingStatus.style.color = "green";
+        }
+        phishingStatus.textContent = message;
+      });
+    });
+  });
+  
+
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action == "sendPhishingStatus") {
+      var isPhishing = request.isPhishing;
+      var message = request.message;
+      var phishingStatus = document.getElementById('phishingStatus');
+      if (isPhishing) {
+        phishingStatus.style.color = "red";
+      } else {
+        phishingStatus.style.color = "green";
+      }
+      phishingStatus.textContent = message;
+    }
+  });
+  

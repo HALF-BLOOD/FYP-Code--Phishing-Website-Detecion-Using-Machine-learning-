@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import pickle
 import pandas as pd
 import webUrl
@@ -31,8 +31,9 @@ def check_phishing():
     model = pickle.load(open("XGBoostClassifier.pickle.dat", "rb"))
     p = model.predict(data2)
     print (p)
-    
-    return ''
+
+    result = {"is_phishing": bool(p), "message": "This website is a phishing website." if p else "This website is not a phishing website."}
+    return jsonify(result)
 
 if __name__ == '__main__':
   app.run(debug=True)
