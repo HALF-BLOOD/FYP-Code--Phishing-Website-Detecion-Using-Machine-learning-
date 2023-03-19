@@ -1,34 +1,193 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>Phishing Detector</title>
     <style>
       body {
         font-family: Arial, sans-serif;
         font-size: 14px;
         padding: 10px;
+        background-color: #202020;
+        color: #ebebeb;
+        height: 400px;
+        width: 350px;
       }
+
       h1 {
-        font-size: 18px;
+        font-size: 22px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .logo {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+      }
+
+      #toggleExtension {
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
         margin-bottom: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 100px;
       }
+
+      #toggleExtension:hover {
+        background-color: #4caf50;
+      }
+
+      #toggleExtension.off {
+        background-color: #e53935;
+      }
+
+      #toggleExtension.off:hover {
+        background-color: #e53935;
+      }
+
+      #checkPhishing {
+        background-color: #00adef;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+
+      #checkPhishing:hover {
+        background-color: #0088bc;
+      }
+
+      #phishingStatus {
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+
       .result {
-        margin-top: 10px;
+        margin-top: 20px;
       }
+
       .error {
-        color: red;
+        color: #e53935;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
       }
+
+      .error::before {
+        content: "\26A0";
+        font-size: 24px;
+        margin-right: 10px;
+      }
+
       .success {
-        color: green;
+        color: #4caf50;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
       }
+
+      .success::before {
+        content: "\2714";
+        font-size: 24px;
+        margin-right: 10px;
+      }
+
+      #blocklist button {
+        margin: 10px 5px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      #blocklist button.red {
+        background-color: #e53935;
+        color: white;
+      }
+
+      #blocklist button.red:hover {
+        background-color: #c62828;
+      }
+
+      #blocklist button.green {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      #blocklist button.green:hover {
+        background-color: #388e3c;
+      }
+
+      #phishing-buttons {
+        display: none;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f44336;
+        
+
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+    }
+
+    #phishing-buttons p {
+      margin: 0;
+      padding: 0;
+      font-size: 18px;
+    }
+
+    #phishing-buttons button {
+      margin: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background-color: #4CAF50;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+    }
+
+    #phishing-buttons button:hover {
+      background-color: #3e8e41;
+    }
+
     </style>
   </head>
   <body>
-    <h1>Phishing Detector</h1>
+    <h1>
+      <img class="logo" src="Images/logo.png" alt="Phishing Detection Logo">
+      PHIS :D
+      <button id="toggleExtension" class="on">ON</button>
+    </h1>
     <button id="checkPhishing">Check for Phishing</button>
-    <p id="phishingStatus">Click the button to check for phishing.</p>
     <div id="result" class="result"></div>
+    <div id="phishing-buttons" style="display:none;">
+      <p>Website automatically added to blocklist. Remove it?</p>
+      <button id="blocklist-remove">Yes</button>
+      <button id="blocklist-add">NO</button>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>
