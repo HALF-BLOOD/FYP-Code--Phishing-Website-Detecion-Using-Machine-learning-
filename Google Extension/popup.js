@@ -87,12 +87,35 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
 
-  // ---------------visual js----------------
-  const toggleButton = document.getElementById("toggleExtension");
-      toggleButton.addEventListener("click", function() {
-        toggleButton.classList.toggle("on");
-        toggleButton.classList.toggle("off");
-        toggleButton.textContent = toggleButton.classList.contains("on") ? "ON" : "OFF";
-      });
+// ---------------visual js----------------
 
-      
+const toggleButton = document.getElementById("toggleExtension");
+const buttons = document.getElementsByTagName("button");
+const checkPhishingButton = document.getElementById("checkPhishing");
+
+toggleButton.addEventListener("click", function() {
+    toggleButton.classList.toggle("on");
+    toggleButton.classList.toggle("off");
+    toggleButton.textContent = toggleButton.classList.contains("on") ? "ON" : "OFF";
+
+    if (toggleButton.classList.contains("off")) {
+        for (let i = 0; i < buttons.length; i++) {
+            if (buttons[i] !== toggleButton) {
+                buttons[i].setAttribute("disabled", "disabled");
+                buttons[i].style.backgroundColor = "gray";
+            }
+        }
+        document.body.style.backgroundColor = "gray";
+        document.body.style.filter = "blur(2px)";
+        checkPhishingButton.style.backgroundColor = "gray";
+    } else {
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].removeAttribute("disabled");
+            buttons[i].style.backgroundColor = "";
+        }
+        document.body.style.backgroundColor = "";
+        document.body.style.filter = "";
+        checkPhishingButton.style.backgroundColor = "";
+    }
+});
+

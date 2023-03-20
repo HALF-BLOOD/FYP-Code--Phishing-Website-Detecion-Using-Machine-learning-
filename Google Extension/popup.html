@@ -10,9 +10,10 @@
         padding: 10px;
         background-color: #202020;
         color: #ebebeb;
-        height: 400px;
+        height: 320px;
         width: 350px;
       }
+     
 
       h1 {
         font-size: 22px;
@@ -39,7 +40,7 @@
         margin-bottom: 10px;
         border-radius: 5px;
         cursor: pointer;
-        margin-left: 100px;
+        margin-left: 150px;
       }
 
       #toggleExtension:hover {
@@ -173,6 +174,10 @@
       background-color: #3e8e41;
     }
 
+    .off-state *:not(#toggleExtension) {
+    filter: blur(5px);
+}
+    
     </style>
   </head>
   <body>
