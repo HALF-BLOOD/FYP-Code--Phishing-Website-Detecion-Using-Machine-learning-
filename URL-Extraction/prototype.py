@@ -1,4 +1,7 @@
 #importing required packages
+
+import ssl
+import time
 from urllib.parse import urlparse,urlencode
 import ipaddress 
 import re
@@ -16,6 +19,8 @@ import whois
 import urllib
 import urllib.request
 from datetime import datetime
+from selenium import webdriver
+import enchant
 
 
 
@@ -52,7 +57,7 @@ def urlLength(url):
         return 1
 
 
-#5  depth of url (sums the number of '/' in url )
+#5  depth of url (sums the number of '/' in url ) done
 def depth(url):
     slash = urlparse(url).path.split ('/')
     depth = 0
@@ -74,7 +79,7 @@ def redirection(url):
         return 0
 
 
-# 7 checking for https token in domain 
+# 7 checking for https token in domain (done)
 def https(url):
     domain = urlparse(url).netloc
     if 'https' in domain:
@@ -106,23 +111,32 @@ def prefixSuffix(url):
         return 0 
     
     
-    '''
-    
-    
-    DOMAIN BASED FEATURES EXTRACTION 
-    
-    
-    
-    '''
-    
+
+#10 dns record availability
+def dnsRecord(url):
+    try:
+        socket.gethostbyname(url)
+        # DNS record is available, URL is more likely to be legitimate
+        return 0
+    except socket.gaierror:
+        # DNS record is not available, URL is more likely to be a phishing attempt
+        return 1
 
 
-
-#10 dns record availability 
 #11 web traffic 
-
 def webTraffic(url):
-    return 1
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            # Web traffic is available, URL is more likely to be legitimate
+            return 0
+        else:
+            # Web traffic is not available, URL is more likely to be a phishing attempt
+            return 1
+    except:
+        # Unable to access the URL, URL is more likely to be a phishing attempt
+        return 1
+
         
     
 #12 age of damain
@@ -171,57 +185,138 @@ def domainEnd(domain_name):
             end = 1
     return end
 
-'''
 
-HTML JAVASCRIPT BASED FEATURES
+#14  iframe
+def iframe(url):
+    response = requests.get(url)
+    # Use BeautifulSoup to parse the HTML content
+    soup = BeautifulSoup(response.text, 'html.parser')
 
+    # Find all iFrame elements in the HTML content
+    iframes = soup.find_all('iframe')
 
-'''
-
-
-#14 Iframe redirection 
-def iframe(response):
-    if response =="":
+    if iframes: 
         return 1
     else:
-        if re.findall(r"[<iframe>]|<frameBorder>]",response.text):
-            return 0
-        else:
-            return 1
+        return 0
         
         
-#15 mouse effect status
-def mouseEffect(response):
-    if response =="":
-        return 1
-    else:
-        if re.findall("<script>.+onmouseover.+</script>",response.text):
-            return 1
-        else:
-            return 0
-        
+#15 Use of ssl cerificate
+def checkSSL(url):
+# send an HTTPS request to the website
 
-#16 rightclick attributes checking
-def rightClick(response):
-    if response =="":
+    response = requests.get(url)
+
+    # check the response headers for the presence of the Strict-Transport-Security header
+    if 'Strict-Transport-Security' in response.headers:
+        return 0
+    else:
+        return 1
+
+
+#16  SSL certificate validity
+def sslCheck(url):
+
+  port = 443
+  # Create a socket and wrap it with SSL
+  context = ssl.create_default_context()
+  with socket.create_connection((url, port)) as sock:
+      with context.wrap_socket(sock, server_hostname=url) as sslsock:
+          # Get the certificate and its details
+          cert = sslsock.getpeercert()
+        #   issuer = cert['issuer']
+        #   subject = cert['subject']
+        #   expiration_date = cert['notAfter']
+          # Check if the certificate is valid
+          if ssl.match_hostname(cert, url):
+              return 0
+          else:
+              return 1
+
+
+#17 Misspelled words in url
+def misspell(url):
+# retrieve the website content
+
+    response = requests.get(url)
+
+    # extract the text content from the HTML
+    text = response.text
+
+    # create a dictionary object for the English language
+    dictionary = enchant.Dict('en_US')
+
+    # split the text into words and check for misspelled words
+    words = text.split()
+    misspelled_words = []
+    for word in words:
+        if not dictionary.check(word):
+            misspelled_words.append(word)
+
+    # print the misspelled words
+    if len(misspelled_words) > 0:
         return 1
     else:
-        if re.findall(r"event.button ?=== ?2", response.text):
-            return 0
-        else:
-            return 1
-        
-# 17 Number of web forwarding
-def forwarding(response):
-    if response =="":
+        return 0
+
+
+#18 Presence of pop-up window
+
+def popup(url): 
+
+  # set up the Chrome browser
+  options = webdriver.ChromeOptions()
+  options.add_argument('--disable-extensions')
+  driver = webdriver.Chrome(options=options)
+
+  # navigate to the website
+  driver.get(url)
+
+  # check if a pop-up window is displayed
+  try:
+      popup = driver.find_element_by_xpath('//div[contains(@class, "popup")]')
+      if popup.is_displayed():
+          driver.quit()
+          return 1
+  except:
+      driver.quit()
+      return 0
+
+#19 Presence of captcha
+def captcha(url):
+
+    # send an HTTP request to the website
+    response = requests.get(url)
+
+    # parse the response HTML using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # check for the presence of CAPTCHA elements
+    if soup.find('input', {'type': 'text', 'name': 'captcha'}) is not None:
+        return 0
+    else:
+        return 1    
+
+
+
+#20 sub domain
+
+def subDomain(url):
+    ip_addresses = socket.gethostbyname_ex(url)[2]
+
+    # loop through the IP addresses and check for subdomains
+    subd = []
+    for ip_address in ip_addresses:
+        reverse_dns = socket.gethostbyaddr(ip_address)[0]
+        if reverse_dns != domain:
+            subd.append(reverse_dns)
+
+    # print the subdomains, if any
+    if len(subd) > 0:
         return 1
     else:
-        if len(response.history) <=2:
-            return 0
-        else:
-            return 1
-        
-        
+        return 0
+
 
 
 
@@ -230,7 +325,7 @@ def featureExtraction(url,label):
 
   features = []
   
-  #Address bar based  features (9)
+  
   features.append(domain(url))
   features.append(ipAddress(url))
   features.append(symbol(url))
@@ -241,10 +336,10 @@ def featureExtraction(url,label):
   features.append(is_short_url(url))
   features.append(prefixSuffix(url))
   
+  
+  
+  
  
-
-
-#  Domain based featurs (4)
   dns = 0
   try:
     domain_name = socket.gethostbyname_ex(url)[-1]
@@ -256,20 +351,15 @@ def featureExtraction(url,label):
   features.append(1 if dns == 1 else domainAge(domain_name))
   features.append(1 if dns == 1 else domainEnd(domain_name))
 
-
-
-    #html and javascript based  features 
+  features.append(iframe(url))
+  features.append(checkSSL(url))
+  features.append(sslCheck(url))
+  features.append(misspell(url))
+  features.append(popup(url))
+  features.append(captcha(url))
+  features.append(subDomain(url))
   
 
-#   try:
-#     response = requests.get(url)
-#   except:
-#     response = ""
-    
-#   features.append(iframe(response))
-#   features.append(mouseEffect(response))
-#   features.append(rightClick(response))
-#   features.append(forwarding(response))
   features.append(label)
   
   return  features
@@ -290,7 +380,7 @@ for i in range(0, 10000):
   phis_features.append(featureExtraction(url,label))
   
 feature_names = ['Domain', 'Have_IP', 'Have_At', 'URL_Length', 'URL_Depth','Redirection', 
-                      'https_Domain', 'TinyURL', 'Prefix/suffix', 'DNS_Record', 'Web_Traffic','Domain_Age', 'Domain_End','Label']
+                      'https_Domain', 'TinyURL', 'Prefix/suffix', 'DNS_Record', 'Web_Traffic','Domain_Age', 'Domain_End', 'iframe', 'checkSSL', 'SSLCheck','misSpell', 'Popup', 'captcha', 'subDomain', 'Label']
 
 phishing = pd.DataFrame(phis_features, columns= feature_names)
 
@@ -313,7 +403,7 @@ for i in range(0, 10000):
   legi_features.append(featureExtraction(url,label))
   
 feature_names = ['Domain', 'Have_IP', 'Have_At', 'URL_Length', 'URL_Depth','Redirection', 
-                      'https_Domain', 'TinyURL', 'Prefix/suffix', 'DNS_Record', 'Web_Traffic','Domain_Age', 'Domain_End','Label']
+                      'https_Domain', 'TinyURL', 'Prefix/suffix', 'DNS_Record', 'Web_Traffic','Domain_Age', 'Domain_End', 'iframe', 'checkSSL', 'SSLCheck','misSpell', 'Popup', 'captcha', 'subDomain','Label']
 
 legitimate = pd.DataFrame(legi_features, columns= feature_names)
 
