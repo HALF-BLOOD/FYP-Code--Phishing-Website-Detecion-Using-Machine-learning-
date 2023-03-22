@@ -2,25 +2,22 @@
   "manifest_version": 2,
   "name": "Phishing Detector",
   "version": "1.0",
-
-
-
+  "description": "Detects phishing websites and blocks access to them.",
   "permissions": [
     "activeTab",
-    "http://127.0.0.1:5000/*",
     "webRequest",
     "webRequestBlocking",
     "storage",
-    "<all_urls>"
+    "http://127.0.0.1:5000/"
   ],
-
-  "background": {
-    "scripts": ["background.js"]
+  "browser_action": {
+    "default_icon": "Images/logo.png",
+    "default_popup": "popup.html"
   },
 
 
-  "browser_action": {
-    "default_title": "Check for Phishing",
-    "default_popup": "popup.html"
-  }
+  "icons": {
+    "48": "Images/logo.png"
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

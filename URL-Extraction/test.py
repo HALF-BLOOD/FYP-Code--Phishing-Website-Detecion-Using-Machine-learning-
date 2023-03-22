@@ -23,9 +23,9 @@ def check_phishing():
     data=[]
     data.append(webUrl.featureExtraction(url))
 
-    feature_names = ['Have_IP', 'Have_IP', 'Have_At', 'URL_Length', 'URL_Depth','Redirection', 
-                      'https_Domain', 'TinyURL', 'Prefix/suffix', 'DNS_Record', 'Web_Traffic','Domain_Age', 'Domain_End', 'iframe', 'checkSSL', 'SSLCheck','misSpell', 'Popup', 'captcha', 'subDomain']
-
+    feature_names = ['Have_IP', 'Have_At', 'URL_Length', 'URL_Depth','Redirection', 
+                          'https_Domain', 'TinyURL', 'Prefix/suffix', 'DNS_Record', 'Web_Traffic', 
+                          'Domain_Age', 'Domain_End']
     data2 = pd.DataFrame(data, columns= feature_names)
 
     model = pickle.load(open("XGBoostClassifier.pickle.dat", "rb"))
