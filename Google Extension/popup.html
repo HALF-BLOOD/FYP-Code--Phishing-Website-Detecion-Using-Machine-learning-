@@ -55,7 +55,7 @@
         background-color: #e53935;
       }
 
-      #checkPhishing {
+      #checkPhishing{
         background-color: #00adef;
         border: none;
         color: white;
@@ -70,7 +70,25 @@
         transition: all 0.2s ease-in-out;
       }
 
-      #checkPhishing:hover {
+      #blockedUrl {
+        background-color: #ef0000;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        margin-left: 35px;
+      }
+
+
+
+      #checkPhishing :hover {
         background-color: #0088bc;
       }
 
@@ -187,12 +205,14 @@
       <button id="toggleExtension" class="on">ON</button>
     </h1>
     <button id="checkPhishing">Check for Phishing</button>
+    <button id="blockedUrl">Blocked URL</button>
     <div id="result" class="result"></div>
     <div id="phishing-buttons" style="display:none;">
       <p>This website is not safe. Do you want to proceed?</p>
       <button id="yesButton">Yes</button>
       <button id="noButton">NO</button>
     </div>
+
     <script src="popup.js"></script>
   </body>
 </html>
