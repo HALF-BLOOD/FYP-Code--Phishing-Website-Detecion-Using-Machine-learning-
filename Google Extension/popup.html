@@ -195,6 +195,47 @@
     .off-state *:not(#toggleExtension) {
     filter: blur(5px);
 }
+
+
+/* Table */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    color: #c62828;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+
+
+
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+
+
     
     </style>
   </head>
@@ -204,6 +245,7 @@
       PHIS :D
       <button id="toggleExtension" class="on">ON</button>
     </h1>
+    
     <button id="checkPhishing">Check for Phishing</button>
     <button id="blockedUrl">Blocked URL</button>
     <div id="result" class="result"></div>

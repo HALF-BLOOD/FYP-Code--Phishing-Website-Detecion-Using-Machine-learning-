@@ -36,6 +36,42 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+// ---------------visual js----------------
+
+const toggleButton = document.getElementById("toggleExtension");
+const buttons = document.getElementsByTagName("button");
+const checkPhishingButton = document.getElementById("checkPhishing");
+
+toggleButton.addEventListener("click", function() {
+    toggleButton.classList.toggle("on");
+    toggleButton.classList.toggle("off");
+    toggleButton.textContent = toggleButton.classList.contains("on") ? "ON" : "OFF";
+
+    if (toggleButton.classList.contains("off")) {
+        for (let i = 0; i < buttons.length; i++) {
+            if (buttons[i] !== toggleButton) {
+                buttons[i].setAttribute("disabled", "disabled");
+                buttons[i].style.backgroundColor = "gray";
+            }
+        }
+        document.body.style.backgroundColor = "gray";
+        document.body.style.filter = "blur(2px)";
+        checkPhishingButton.style.backgroundColor = "gray";
+    } else {
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].removeAttribute("disabled");
+            buttons[i].style.backgroundColor = "";
+        }
+        document.body.style.backgroundColor = "";
+        document.body.style.filter = "";
+        checkPhishingButton.style.backgroundColor = "";
+    }
+});
+
+
+
+
+
 document.getElementById("yesButton").addEventListener("click", function () {
   chrome.storage.local.get('originalUrl', function(data) {
     chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
@@ -73,20 +109,6 @@ document.getElementById("blockedUrl").addEventListener("click", function () {
   xhr.send();
 });
 
-function unblockUrl(url, rowElement) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", "http://127.0.0.1:5000/remove-from-hosts");
-  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  xhr.onload = function () {
-    if (xhr.status === 204) {
-      // Remove the URL from the table
-      rowElement.parentNode.removeChild(rowElement);
-    } else {
-      console.error("Error unblocking URL");
-    }
-  };
-  xhr.send(JSON.stringify({ url: url }));
-}
 
 
 function displayBlockedUrls(blockedUrls) {
@@ -118,7 +140,7 @@ function displayBlockedUrls(blockedUrls) {
     var unblockButton = document.createElement("button");
     unblockButton.textContent = "Unblock";
     unblockButton.addEventListener("click", function () {
-      unblockUrl(url, tr);
+      unblockUrl(url, tr, unblockButton); // Pass unblockButton as an argument
     });
     unblockCell.appendChild(unblockButton);
     tr.appendChild(unblockCell);
@@ -130,3 +152,19 @@ function displayBlockedUrls(blockedUrls) {
   document.body.appendChild(table);
 }
 
+function unblockUrl(url, rowElement, unblockButton) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "http://127.0.0.1:5000/remove-from-hosts");
+  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      // Update the button text, color, and disable it
+      unblockButton.textContent = "Done";
+      unblockButton.style.backgroundColor = "#00adef";
+      unblockButton.disabled = true;
+    } else {
+      console.error("Error unblocking URL");
+    }
+  };
+  xhr.send(JSON.stringify({ url: url }));
+}
